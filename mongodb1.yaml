@@ -25,7 +25,6 @@ spec:
       labels:
         role: mongodb
     spec:
-       terminationGracePeriodSeconds: 10
        containers:
        - name: mongodb
          image: mongo
@@ -37,6 +36,13 @@ spec:
          - "0.0.0.0"
          - "--replSet"
          - "MainRepSet"
+         resources:
+           requests:
+             cpu: 300m
+             memory: 256Mi
+           limits:
+             cpu: 512m
+             memory: 512Mi
          env:
          - name: MONGO_INITDB_ROOT_USERNAME
            value: filinta
@@ -44,20 +50,12 @@ spec:
            value: redhat
          volumeMounts:
          - name: mongodb-volume
-           mountPath: /data/db
-  volumeClaimTemplates:
-  - metadata:
+           mountPath: "/data/db"
+   volumeClaimTemplates:
+   - metadata:
       name: mongodb-volume
-    spec: 
-      storageClassName: "gp2"
-      accessModes: ["ReadWriteMany"]
-      resources:
-        requests:
-          storage: 1Gi
-      resources:
-        requests:
-          cpu: 300m
-          memory: 256Mi
-        limits:
-          cpu: 512m
-          memory: 512Mi
+     spec: 
+       accessModes: ["ReadWriteOnce"]
+       resources:
+         requests:
+           storage: 1Gi
